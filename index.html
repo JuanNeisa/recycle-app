@@ -2,11 +2,24 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <title>Recycle App</title>
 
   </head>
   <body>
-    <input type="file" id="fileInput" accept=".csv, .xlsx" />
+    <h1 class="text" style="text-align: center;">♻️Recycle App</h1>
+    <!-- Upload Files -->
+    <div class="upload-container">
+      <label for="file-input">Seleccionar Archivo</label>
+      <input id="file-input" type="file" accept=".csv, .xlsx" />
+      <span id="output-span" class="text">🟡 Listo para cargar informacion</span>
+    </div>
+    <!-- Report buttons -->
+    <div class="report-container">
+      <button id="general-report" class="custom-botton" style="display: none;">Reporte General</button>
+      <button id="individual-report" class="custom-botton" style="display: none;">Reporte individual</button>
+    </div>
+    <!-- Sumary Results -->
+    <div id="report-viewer"></div>
     <script type="module" src="/src/renderer.js"></script>
   </body>
 </html>
