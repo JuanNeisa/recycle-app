@@ -52,7 +52,6 @@ th {
 }
 
 .report-container{
-  display: flex;
   padding: 20px;
   gap: 10px;
 }
@@ -76,4 +75,12 @@ th {
 
 .custom-botton:active {
   transform: translateY(1px);
+}
+
+.custom-input {
+  width: 200px; /* Ancho del input */
+    padding: 8px; /* Espacio interno */
+    border: 1px solid #ccc; /* Borde */
+    border-radius: 5px; /* Borde redondeado */
+    font-size: 16px; /* Tamaño de fuente */
 }

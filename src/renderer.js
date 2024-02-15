@@ -24,23 +24,39 @@ function removeBlankPropertiesFromObject(obj) {
   return cleanedObj;
 }
 
+function generationRandomParts(material) {
+  const average = material / numberOfParts;
+  const parts = [];
+  let sum = 0;
+  for (let i = 0; i < numberOfParts - 1; i++) {
+    const factor = 0.5 + Math.random();
+    let part = average * factor;
+    part = Math.round(part * 100) / 100;
+    if (part <= 0) part = 0.01;
+    parts.push(part);
+    sum += part;
+  }
+  let lastPart = material - sum;
+  lastPart = Math.round(lastPart * 100) / 100;
+  if (lastPart <= 0) lastPart = 0.01;
+  parts.push(lastPart);
+
+  return parts;
+}
+
 function splitingUnitsPerMaterial(person) {
   const { CEDULA, RECICLADOR, ...materials } = person;
   let seriesOfWeek = [1, 1, 2, 2, 3, 3, 4, 4];
   const response = [];
+  // Creation of random parts
   Object.entries(materials).forEach(([key, value], i) => {
-    const randomNumbersArray = Array.from({ length: 8 }, () => Math.random());
-    const randomSum = randomNumbersArray.reduce(
-      (total, numero) => total + numero,
-      0
-    );
-    randomNumbersArray.forEach((randomNumber, j) => {
+    generationRandomParts(value).forEach((part, j) => {
       response.push({
         CEDULA,
         RECICLADOR,
         MATERIAL: key,
         ["Numero de semana"]: seriesOfWeek[j],
-        ["Entrada diaria"]: (randomNumber / randomSum) * value,
+        ["Entrada diaria"]: part,
       });
     });
   });
@@ -53,6 +69,16 @@ function downloadReport(data, nombre) {
   XLSX.utils.book_append_sheet(workbook, worksheet, "Hoja1");
   XLSX.writeFile(workbook, nombre + ".xlsx");
 }
+
+function downloadIndividualReport(data, nombre) {
+    const workbook = XLSX.utils.book_new();
+    cleanedData.forEach((reclycleObj) => {
+        const dataFilter = data.filter((row) => row.CEDULA === reclycleObj.CEDULA);
+        const worksheet = XLSX.utils.json_to_sheet(dataFilter);
+        XLSX.utils.book_append_sheet(workbook, worksheet, reclycleObj.CEDULA);
+    });
+    XLSX.writeFile(workbook, nombre + ".xlsx");
+  }
 
 function generateGeneralReport(data) {
   // Limpiar la pantalla
@@ -79,10 +105,35 @@ function generateGeneralReport(data) {
   tableContainer.appendChild(downloadButton);
 }
 
+function generateIndividualReport(data) {
+  // Limpiar la pantalla
+  tableContainer.innerHTML = "";
+  const sumaryResult = data.map(({ CEDULA, RECICLADOR, ...rest }) => {
+    return {
+      CEDULA,
+      NOMBRE: RECICLADOR,
+       "UNIDADES DE MATERIAL RECICLADO": Object.values(rest).reduce((a, b) => parseInt(a) + parseInt(b), 0),
+    };
+  });
+  const renderTable = createTable(sumaryResult);
+  tableContainer.appendChild(renderTable);
+
+  // Generar reporte
+  const report = data.map(splitingUnitsPerMaterial).flat();
+  const downloadButton = document.createElement("button");
+  downloadButton.innerHTML = "Descargar reporte";
+  downloadButton.classList.add("custom-botton");
+  downloadButton.style.margin = "20px 12px";
+  downloadButton.addEventListener("click", () => {
+    downloadIndividualReport(report, "Reporte-individual");
+  });
+  tableContainer.appendChild(downloadButton);
+}
+
 function enableReportsGeneration() {
   outputSpan.innerHTML = "🟢 Informacion cargada correctamente";
   generalReportBtn.style.display = "inline";
-  // individualReportBtn.style.display = "inline";
+  individualReportBtn.style.display = "inline";
 }
 
 function readCSVFile(file) {
@@ -103,10 +154,12 @@ function readCSVFile(file) {
 }
 
 // EventListeners
+individualReportBtn.addEventListener("click", () =>
+  generateIndividualReport(cleanedData)
+);
 generalReportBtn.addEventListener("click", () =>
   generateGeneralReport(cleanedData)
 );
-individualReportBtn.addEventListener("click", () => generateIndividualReport());
 fileInput.addEventListener("change", (event) => {
   const file = event.target.files[0];
   if (!file) return;
