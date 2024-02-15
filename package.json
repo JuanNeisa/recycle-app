@@ -2,7 +2,7 @@
   "name": "recycle-app",
   "productName": "recycle-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "A small application for recycling",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",

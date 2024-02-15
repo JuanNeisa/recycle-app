@@ -5,14 +5,18 @@ import { createTable } from "./functions/renderTable";
 
 // Global variables
 let cleanedData;
+let reportInfo;
 let numberOfParts = 8;
 
 // DOM Elements
 const fileInput = document.getElementById("file-input");
+const customDropdown = document.getElementById("custom-dropdown");
 const outputSpan = document.getElementById("output-span");
+const generateReportBtn = document.getElementById("generate-btn");
 const generalReportBtn = document.getElementById("general-report");
 const individualReportBtn = document.getElementById("individual-report");
 const tableContainer = document.getElementById("report-viewer");
+const reportContainer = document.getElementById("report-container");
 
 function removeBlankPropertiesFromObject(obj) {
   const cleanedObj = {};
@@ -46,7 +50,7 @@ function generationRandomParts(material) {
 
 function splitingUnitsPerMaterial(person) {
   const { CEDULA, RECICLADOR, ...materials } = person;
-  let seriesOfWeek = [1, 1, 2, 2, 3, 3, 4, 4];
+  let seriesOfWeek = Array.from({ length: numberOfParts }, (_, i) => Math.floor(i / (numberOfParts / 4)) + 1);
   const response = [];
   // Creation of random parts
   Object.entries(materials).forEach(([key, value], i) => {
@@ -71,16 +75,21 @@ function downloadReport(data, nombre) {
 }
 
 function downloadIndividualReport(data, nombre) {
-    const workbook = XLSX.utils.book_new();
-    cleanedData.forEach((reclycleObj) => {
-        const dataFilter = data.filter((row) => row.CEDULA === reclycleObj.CEDULA);
-        const worksheet = XLSX.utils.json_to_sheet(dataFilter);
-        XLSX.utils.book_append_sheet(workbook, worksheet, reclycleObj.CEDULA);
-    });
-    XLSX.writeFile(workbook, nombre + ".xlsx");
-  }
+  const workbook = XLSX.utils.book_new();
+  cleanedData.forEach((reclycleObj) => {
+    const dataFilter = data.filter((row) => row.CEDULA === reclycleObj.CEDULA);
+    const worksheet = XLSX.utils.json_to_sheet(dataFilter);
+    XLSX.utils.book_append_sheet(workbook, worksheet, reclycleObj.CEDULA);
+  });
+  XLSX.writeFile(workbook, nombre + ".xlsx");
+}
 
-function generateGeneralReport(data) {
+function generateInfoReport(data) {
+  generalReportBtn.disabled = false;
+  individualReportBtn.disabled = false;
+
+  reportInfo = data.map(splitingUnitsPerMaterial).flat();
+
   // Limpiar la pantalla
   tableContainer.innerHTML = "";
   const { CEDULA, RECICLADOR, ...materials } = data[0];
@@ -93,47 +102,16 @@ function generateGeneralReport(data) {
   ];
   const renderTable = createTable(sumaryResult);
   tableContainer.appendChild(renderTable);
-
-  const report = data.map(splitingUnitsPerMaterial).flat();
-  const downloadButton = document.createElement("button");
-  downloadButton.innerHTML = "Descargar reporte";
-  downloadButton.classList.add("custom-botton");
-  downloadButton.style.margin = "20px 12px";
-  downloadButton.addEventListener("click", () => {
-    downloadReport(report, "Reporte-general");
-  });
-  tableContainer.appendChild(downloadButton);
-}
-
-function generateIndividualReport(data) {
-  // Limpiar la pantalla
-  tableContainer.innerHTML = "";
-  const sumaryResult = data.map(({ CEDULA, RECICLADOR, ...rest }) => {
-    return {
-      CEDULA,
-      NOMBRE: RECICLADOR,
-       "UNIDADES DE MATERIAL RECICLADO": Object.values(rest).reduce((a, b) => parseInt(a) + parseInt(b), 0),
-    };
-  });
-  const renderTable = createTable(sumaryResult);
-  tableContainer.appendChild(renderTable);
-
-  // Generar reporte
-  const report = data.map(splitingUnitsPerMaterial).flat();
-  const downloadButton = document.createElement("button");
-  downloadButton.innerHTML = "Descargar reporte";
-  downloadButton.classList.add("custom-botton");
-  downloadButton.style.margin = "20px 12px";
-  downloadButton.addEventListener("click", () => {
-    downloadIndividualReport(report, "Reporte-individual");
-  });
-  tableContainer.appendChild(downloadButton);
 }
 
 function enableReportsGeneration() {
   outputSpan.innerHTML = "🟢 Informacion cargada correctamente";
-  generalReportBtn.style.display = "inline";
-  individualReportBtn.style.display = "inline";
+  reportContainer.style.display = "block";
+  // Limpiar la pantalla
+  tableContainer.innerHTML = "";
+  generalReportBtn.disabled = true;
+  individualReportBtn.disabled = true;
+  customDropdown.value = "";
 }
 
 function readCSVFile(file) {
@@ -154,12 +132,21 @@ function readCSVFile(file) {
 }
 
 // EventListeners
+customDropdown.addEventListener("change", function () {
+  if (customDropdown.value !== "") {
+    numberOfParts = customDropdown.value;
+    generateReportBtn.disabled = false;
+  } else {
+    generateReportBtn.disabled = true;
+  }
+});
+generateReportBtn.addEventListener("click", () =>
+  generateInfoReport(cleanedData)
+);
 individualReportBtn.addEventListener("click", () =>
-  generateIndividualReport(cleanedData)
+  downloadIndividualReport(reportInfo, 'reporte-individual')
 );
-generalReportBtn.addEventListener("click", () =>
-  generateGeneralReport(cleanedData)
-);
+generalReportBtn.addEventListener("click", () => downloadReport(reportInfo, 'reporte-general'));
 fileInput.addEventListener("change", (event) => {
   const file = event.target.files[0];
   if (!file) return;

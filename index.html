@@ -9,14 +9,22 @@
     <h1 style="text-align: center;">♻️Recycle App</h1>
     <!-- Upload Files -->
     <div class="upload-container">
-      <label for="file-input">Seleccionar Archivo</label>
+      <label for="file-input" class="custom-input-file">Seleccionar Archivo</label>
       <input id="file-input" type="file" accept=".csv" />
       <span id="output-span">🟡 Listo para cargar informacion</span>
     </div>
     <!-- Report buttons -->
-    <div class="report-container">
-      <button id="general-report" class="custom-botton" style="display: none;">Reporte General</button>
-      <button id="individual-report" class="custom-botton" style="display: none;">Reporte individual</button>
+    <div id="report-container" class="report-container" style="display: none;">
+      <span>Selecciona el numero de partes: </span>
+      <select id="custom-dropdown" class="custom-dropdown">
+        <option value="" selected>seleccione la opcion</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+        <option value="12">12</option>
+      </select>
+      <button id="generate-btn" class="custom-botton" style="background-color: grey;" disabled>📋Generar Reportes</button>
+      <button id="general-report" class="custom-botton" disabled>⬇️Reporte General</button>
+      <button id="individual-report" class="custom-botton" disabled>⬇️Reporte individual</button>
     </div>
     <!-- Sumary Results -->
     <div id="report-viewer"></div>
