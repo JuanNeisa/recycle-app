@@ -1,15 +1,15 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import FolderIcon from '@mui/icons-material/Folder';
-import { blue } from '@mui/material/colors';
+import FolderCopyIcon from '@mui/icons-material/FolderCopy';
+import { grey } from '@mui/material/colors';
 
 export default function IndividualReport() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2} style={{ padding: '20px' }}>
         <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <FolderIcon sx={{ fontSize: 140, color: blue[500] }} />
+          <FolderCopyIcon sx={{ fontSize: 140, color: grey[500] }} />
         </Grid>
         <Grid item xs={8}>
             <div>

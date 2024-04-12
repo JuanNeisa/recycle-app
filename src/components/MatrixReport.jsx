@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import GridOnIcon from '@mui/icons-material/GridOn';
-import { teal } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 
 
 export default function MatrixReport() {
@@ -10,7 +10,7 @@ export default function MatrixReport() {
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2} style={{ padding: '20px' }}>
         <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <GridOnIcon sx={{ fontSize: 140, color: teal[500] }} />
+          <GridOnIcon sx={{ fontSize: 140, color: grey[500] }} />
         </Grid>
         <Grid item xs={8}>
             <div>
