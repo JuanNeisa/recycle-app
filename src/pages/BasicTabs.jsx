@@ -8,7 +8,7 @@ import IndividualReport from '../components/individualReport';
 import MatrixReport from '../components/MatrixReport';
 
 export default function BasicTabs({processingData, validTabs}) {
-  const [value, setValue] = useState(3);
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => { 
     setValue(newValue);
@@ -21,7 +21,7 @@ export default function BasicTabs({processingData, validTabs}) {
           <Tab label="Informacion" />
           <Tab label="Reporte General" disabled={!validTabs}/>
           <Tab label="Reporte Individual" disabled={!validTabs}/>
-          <Tab label="Matris Mensual"/>
+          <Tab label="Matris Mensual" disabled={!validTabs}/>
         </Tabs>
       </Box>
       {value === 0 && <Info />}
