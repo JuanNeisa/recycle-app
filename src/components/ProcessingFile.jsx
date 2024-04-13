@@ -1,5 +1,5 @@
 //Libraries
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
@@ -63,6 +63,7 @@ export default function ProcessingFile({ setData }) {
   const handleChange = (event, newValue) => {
     const file = event.target.files[0];
     setStatusFile(status.LOADING);
+    setCsvFile(file)
     if (file.type !== VALID_EXTENSION) {
       setStatusFile(status.ERROR);
       setData(null);
@@ -109,10 +110,8 @@ export default function ProcessingFile({ setData }) {
               Upload file
               <VisuallyHiddenInput type="file" />
             </Button>
-            <h4>
-              {csvFile?.name || statusFile === status.ERROR
-                ? "Extencion no valida. Intente nuevamente."
-                : "Cargar archivo."}
+            <h4 style={{marginLeft: '6px'}}>
+              {csvFile?.name}
             </h4>
           </div>
           <Box sx={{ minWidth: 200 }}>

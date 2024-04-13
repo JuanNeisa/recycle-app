@@ -16,6 +16,7 @@ export default function Info() {
             <div>
                 <ul>
                     <li>Solo se pueden subir archivos con extencion CSV.</li>
+                    <li>Si no se selecciona el numero de partes, por defecto seran 8. Para que sea diferente se debe seleccionar antes de cargar el archivo CSV.</li>
                 </ul>
             </div>
         </Grid>

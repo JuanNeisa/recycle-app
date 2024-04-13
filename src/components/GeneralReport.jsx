@@ -29,7 +29,7 @@ export default function GeneralReport({ data }) {
 
   const downloadReportInComponent = () => {
     const reportInfo = data.result.map((person) => splitingUnitsPerMaterial(person, data.numberOfParts)).flat();
-    downloadReport(reportInfo, 'ReporteGeneral')
+    downloadReport(reportInfo, 'reporte-general')
   };
 
   return (

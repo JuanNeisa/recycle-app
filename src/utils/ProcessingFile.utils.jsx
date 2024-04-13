@@ -72,7 +72,7 @@ export function downloadReport(data, nombre) {
   XLSX.writeFile(workbook, nombre + ".xlsx");
 }
 
-export function downloadIndividualReport(data, nombre) {
+export function downloadIndividualReport(data, cleanedData, nombre) {
   const workbook = XLSX.utils.book_new();
   cleanedData.forEach((reclycleObj) => {
     const dataFilter = data.filter((row) => row.CEDULA === reclycleObj.CEDULA);
