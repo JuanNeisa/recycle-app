@@ -129,7 +129,7 @@ export function setInformation(data, date) {
           r: index + 5,
           c: randomDaysArr[i],
         });
-        worksheet[cellAddress] = { v: item["Entrada diaria"], t: "s" };
+        worksheet[cellAddress] = { v: item["Entrada diaria"], t: "n" };
       });
 
       sundayArr.forEach((dayNumber, j) => {
