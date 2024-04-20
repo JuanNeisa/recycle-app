@@ -63,6 +63,7 @@ function downloadMatrixReport(data, selectedDate) {
 
 export function downloadZipFile(data, selectedDate) {
   const zip = new JSZip();
+  const instantTime = new Date();
   const individualReportBlob = downloadIndividualReport(data);
   const generalReportBlob = downloadGeneralReport(data);
   const matrixReport = downloadMatrixReport(data, selectedDate);
@@ -72,6 +73,6 @@ export function downloadZipFile(data, selectedDate) {
   zip.file("matriz-materiales.xlsx", matrixReport);
 
   zip.generateAsync({ type: "blob" }).then((blob) => {
-    FileSaver.saveAs(blob, "reportes.zip");
+    FileSaver.saveAs(blob, "reportes" + instantTime.getUTCDate() + ".zip");
   });
 }

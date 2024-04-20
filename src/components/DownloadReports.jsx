@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 
 //Utils
 import { generateGlobalInformation } from "../utils/ProcessingFile.utils";
-import {
-  downloadZipFile,
-} from "../utils/downloadReport.utils";
+import { downloadZipFile } from "../utils/downloadReport.utils";
 
 //Material
 import Box from "@mui/material/Box";
@@ -20,7 +18,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-export default function MatrixReport({ data }) {
+export default function DownloadReports({ data }) {
   const [date, setDate] = useState(null);
   const [materials, setMaterials] = useState(null);
   useEffect(() => {
@@ -57,12 +55,12 @@ export default function MatrixReport({ data }) {
           <Card sx={{ minWidth: 275 }} variant="outlined">
             <CardContent>
               <Typography variant="h5" component="div" marginBottom={"5px"}>
-                Reporte
+                Reportes
               </Typography>
               <Typography color="text.secondary">
                 {data?.result?.length} Recicladores procesados
               </Typography>
-              <Typography color="text.secondary">
+              <Typography color="text.secondary" marginBottom={"10px"}>
                 {materials} Materiales x reciclador
               </Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -83,7 +83,7 @@ function setDefaultHeader() {
   return worksheet;
 }
 
-const filterByMaterial = (array, propiedad) =>{
+const filterByMaterial = (array, propiedad) => {
   return array.reduce((acc, obj) => {
     const clave = obj[propiedad];
     if (!acc[clave]) {
@@ -92,7 +92,7 @@ const filterByMaterial = (array, propiedad) =>{
     acc[clave].push(obj);
     return acc;
   }, {});
-}
+};
 
 export function setInformation(data, date) {
   const workbook = XLSX.utils.book_new();
@@ -105,29 +105,34 @@ export function setInformation(data, date) {
     worksheet["B3"] = { v: materialsArray[0].RECICLADOR, t: "s" };
     worksheet["B4"] = { v: materialsArray[0].MACRORUTA, t: "s" };
     worksheet["S3"] = { v: materialsArray[0].VEHICULO, t: "s" };
-    worksheet["S4"] = { v: (date.getMonth() + 1) + " - " + date.getFullYear(), t: "s" };
+    worksheet["S4"] = {
+      v: date.getMonth() + 1 + " - " + date.getFullYear(),
+      t: "s",
+    };
 
-    Object.entries(filterByMaterial(materialsArray, 'MATERIAL')).forEach(([material, arrayPerMaterial], j) => {
-      // Set material name
-      worksheet["A" + (j + 6)] = { v: material, t: "s" };
+    Object.entries(filterByMaterial(materialsArray, "MATERIAL")).forEach(
+      ([material, arrayPerMaterial], j) => {
+        // Set material name
+        worksheet["A" + (j + 6)] = { v: material, t: "s" };
 
-       // Set values in material row
-       arrayPerMaterial.forEach((item, i) => {
-        const cellAddress = XLSX.utils.encode_cell({
-          r: j + 5,
-          c: item.DIA,
+        // Set values in material row
+        arrayPerMaterial.forEach((item, i) => {
+          const cellAddress = XLSX.utils.encode_cell({
+            r: j + 5,
+            c: item.DIA,
+          });
+          worksheet[cellAddress] = { v: item["Entrada diaria"], t: "n" };
         });
-        worksheet[cellAddress] = { v: item["Entrada diaria"], t: "n" };
-      });
 
-      sundayArr.forEach((dayNumber, k) => {
-        const cellAddress = XLSX.utils.encode_cell({
-          r: j + 5,
-          c: dayNumber,
+        sundayArr.forEach((dayNumber, k) => {
+          const cellAddress = XLSX.utils.encode_cell({
+            r: j + 5,
+            c: dayNumber,
+          });
+          worksheet[cellAddress] = { v: "|", t: "s" };
         });
-        worksheet[cellAddress] = { v: "|", t: "s" };
-      });
-    })
+      }
+    );
 
     XLSX.utils.book_append_sheet(workbook, worksheet, CEDULA);
   });
