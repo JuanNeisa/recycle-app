@@ -17,6 +17,8 @@ export default function Info() {
                 <ul>
                     <li>Solo se pueden subir archivos con extencion CSV.</li>
                     <li>Si no se selecciona el numero de partes, por defecto seran 8. Para que sea diferente se debe seleccionar antes de cargar el archivo CSV.</li>
+                    <li>Dentro del archivo CSV toda cabecera de columna que este en MAYUSCULAS sera informacion personal del reciclador.</li>
+                    <li>Para que los datos sean consistentes en los 3 archivos se descargara un ZIP con el contenido de los 3 tipos de reporte.</li>
                 </ul>
             </div>
         </Grid>

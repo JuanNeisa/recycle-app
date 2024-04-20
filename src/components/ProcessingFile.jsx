@@ -127,7 +127,9 @@ export default function ProcessingFile({ setData }) {
                 onChange={(event) => setNumberOfParts(event.target.value)}
               >
                 <MenuItem value={4}>4</MenuItem>
+                <MenuItem value={6}>6</MenuItem>
                 <MenuItem value={8}>8</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
                 <MenuItem value={12}>12</MenuItem>
               </Select>
             </FormControl>
