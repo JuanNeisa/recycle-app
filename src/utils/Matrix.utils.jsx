@@ -1,7 +1,7 @@
+import { arrayIncludes } from "@mui/x-date-pickers/internals/utils/utils";
 import * as XLSX from "xlsx";
-import { splitingUnitsPerMaterial } from "./ProcessingFile.utils";
 
-function SundaysInAMonth(date) {
+const sundaysInAMonth = (date) => {
   const sundayArr = [];
   const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
   const endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -13,12 +13,7 @@ function SundaysInAMonth(date) {
   }
 
   return { sundayArr, daysCounter };
-}
-
-function randomDates(days, amount) {
-  const randomDays = days.sort(() => Math.random() - 0.5);
-  return randomDays.slice(0, amount);
-}
+};
 
 function setDefaultHeader() {
   const worksheet = XLSX.utils.aoa_to_sheet([]);
@@ -88,7 +83,7 @@ function setDefaultHeader() {
   return worksheet;
 }
 
-function filterByMaterial(array, propiedad) {
+const filterByMaterial = (array, propiedad) => {
   return array.reduce((acc, obj) => {
     const clave = obj[propiedad];
     if (!acc[clave]) {
@@ -97,52 +92,52 @@ function filterByMaterial(array, propiedad) {
     acc[clave].push(obj);
     return acc;
   }, {});
-}
+};
 
 export function setInformation(data, date) {
   const workbook = XLSX.utils.book_new();
-  const { sundayArr, daysCounter } = SundaysInAMonth(date);
-  const workingDays = Array.from(
-    { length: daysCounter },
-    (_, index) => index + 1
-  ).filter((element) => !sundayArr.includes(element));
+  const { sundayArr, daysCounter } = sundaysInAMonth(date);
   // set Random matrix
-  data.result.forEach((person) => {
+  data.forEach(([CEDULA, materialsArray], i) => {
     const worksheet = setDefaultHeader();
-    const matrixData = splitingUnitsPerMaterial(person, data.numberOfParts);
-    const filter = filterByMaterial(matrixData, "MATERIAL");
 
     // set Personal information
-    worksheet["B3"] = { v: person.RECICLADOR, t: "s" };
-    worksheet["B4"] = { v: person.MACRORUTA, t: "s" };
-    worksheet["S3"] = { v: person.VEHICULO, t: "s" };
-    worksheet["S4"] = { v: (date.getMonth() + 1) + " - " + date.getFullYear(), t: "s" };
+    worksheet["B3"] = { v: materialsArray[0].RECICLADOR, t: "s" };
+    worksheet["B4"] = { v: materialsArray[0].MACRORUTA, t: "s" };
+    worksheet["S3"] = { v: materialsArray[0].VEHICULO, t: "s" };
+    worksheet["S4"] = {
+      v: date.getMonth() + 1 + " - " + date.getFullYear(),
+      t: "s",
+    };
 
-    Object.entries(filter).forEach(([key, value], index) => {
-      const randomDaysArr = randomDates(workingDays, data.numberOfParts);
-      
-      // Set material name
-      worksheet["A" + (index + 6)] = { v: key, t: "s" };
-      // Set values in material row
-      value.forEach((item, i) => {
-        const cellAddress = XLSX.utils.encode_cell({
-          r: index + 5,
-          c: randomDaysArr[i],
+    Object.entries(filterByMaterial(materialsArray, "MATERIAL")).forEach(
+      ([material, arrayPerMaterial], j) => {
+        // Set material name
+        worksheet["A" + (j + 6)] = { v: material, t: "s" };
+
+        // Set values in material row
+        arrayPerMaterial.forEach((item, i) => {
+          const cellAddress = XLSX.utils.encode_cell({
+            r: j + 5,
+            c: item.DIA,
+          });
+          worksheet[cellAddress] = { v: item["Entrada diaria"], t: "n" };
         });
-        worksheet[cellAddress] = { v: item["Entrada diaria"], t: "n" };
-      });
 
-      sundayArr.forEach((dayNumber, j) => {
-        const cellAddress = XLSX.utils.encode_cell({
-          r: index + 5,
-          c: dayNumber,
+        sundayArr.forEach((dayNumber, k) => {
+          const cellAddress = XLSX.utils.encode_cell({
+            r: j + 5,
+            c: dayNumber,
+          });
+          worksheet[cellAddress] = { v: "|", t: "s" };
         });
-        worksheet[cellAddress] = { v: "|", t: "s" };
-      });
-    });
+      }
+    );
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, person.CEDULA);
+    XLSX.utils.book_append_sheet(workbook, worksheet, CEDULA);
   });
 
-  XLSX.writeFile(workbook, "Matriz_Material.xlsx");
+  // Download Excel file
+  // XLSX.writeFile(workbook, "Matriz_Material.xlsx");
+  return workbook;
 }

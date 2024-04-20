@@ -1,7 +1,7 @@
 {
   "name": "recycle-app",
   "productName": "recycle-app",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "A small application for recycling",
   "main": ".vite/build/main.js",
   "scripts": {
@@ -37,6 +37,8 @@
     "@mui/x-date-pickers": "7.2.0",
     "dayjs": "1.11.10",
     "electron-squirrel-startup": "^1.0.0",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
