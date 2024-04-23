@@ -54,20 +54,17 @@ const sundaysInAMonth = (date) => {
   return { sundayArr, daysCounter };
 };
 
-function obtenerNumeroSemanaEnMes(fecha) {
-  const fechaObj = new Date(fecha);
-  const diaSemana = fechaObj.getDay();
-  const diaMes = fechaObj.getDate();
+const getWeekNumber = (fecha) => {
+  let sundayCounter = 1;
+  const dateObj = new Date(fecha);
+  const selectedDay = dateObj.getDate();
 
-  const primerLunes = new Date(fechaObj.getFullYear(), fechaObj.getMonth(), 1);
-  let semanasCompletas = Math.floor(
-    (diaMes + (diaSemana === 0 ? 6 : 1) - 1) / 7
-  );
-
-  if (primerLunes.getDay() !== 1) semanasCompletas--;
-
-  return semanasCompletas + 1;
-}
+  for (let i = selectedDay; i >= 1; i--) {
+    if (dateObj.getDay() === 0) sundayCounter++;
+    dateObj.setDate(dateObj.getDate() - 1);
+  }
+  return sundayCounter;
+};
 
 const getRandomDays = (selectedDate, materialsArray, numberOfParts) => {
   const { sundayArr, daysCounter } = sundaysInAMonth(selectedDate);
@@ -79,7 +76,7 @@ const getRandomDays = (selectedDate, materialsArray, numberOfParts) => {
 
   materialsArray.forEach(() => {
     randomDays.push(
-      ...workingDays.sort(() => Math.random() - 0.5).slice(0, numberOfParts)
+      ...workingDays.sort(() => Math.random() - 0.5).slice(0, numberOfParts).sort((a, b) => a - b)
     );
   });
 
@@ -118,7 +115,7 @@ export function generateGlobalInformation(csvData, selectedDate) {
       globalResponse.push({
         ...personalData,
         ...part,
-        ["Numero de semana"]: obtenerNumeroSemanaEnMes(
+        ["Numero de semana"]: getWeekNumber(
           selectedDate.getFullYear() +
             "-" +
             (selectedDate.getMonth() + 1) +

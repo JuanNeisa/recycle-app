@@ -73,6 +73,6 @@ export function downloadZipFile(data, selectedDate) {
   zip.file("matriz-materiales.xlsx", matrixReport);
 
   zip.generateAsync({ type: "blob" }).then((blob) => {
-    FileSaver.saveAs(blob, "reportes" + instantTime.getUTCDate() + ".zip");
+    FileSaver.saveAs(blob, "reporte_" + instantTime.getUTCDate() + ".zip");
   });
 }
