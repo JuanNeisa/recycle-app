@@ -22,7 +22,6 @@ export default function BasicTabs({ processingData, validTabs }) {
         <Tabs
           value={value}
           onChange={handleChange}
-          aria-label="basic tabs example"
           centered
         >
           <Tab label="Informacion" />

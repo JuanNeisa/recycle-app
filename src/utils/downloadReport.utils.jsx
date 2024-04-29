@@ -61,16 +61,64 @@ function downloadMatrixReport(data, selectedDate) {
   });
 }
 
-export function downloadZipFile(data, selectedDate) {
+function downloadMassBalancReport(data, materialsCode) {
+  const workbook = XLSX.utils.book_new();
+  let index = 0;
+
+  while (data[index]) {
+    const valorActual = data[index];
+    const valorSiguiente = data[index + 1];
+    const massObject = {
+      MACRORUTA: valorActual.MACRORUTA,
+      SEMANA: valorActual["Numero de semana"] || valorActual.SEMANA,
+      ID_RECICLADOR: valorActual.CEDULA || valorActual.ID_RECICLADOR,
+      VEHICULO: valorActual.VEHICULO,
+      CANTIDAD_MATERIAL:
+        valorActual["Entrada diaria"] || valorActual.CANTIDAD_MATERIAL,
+      TIPO_MATERIAL:
+        materialsCode[valorActual.MATERIAL] || valorActual.TIPO_MATERIAL,
+    };
+
+    if (
+      valorSiguiente &&
+      (valorSiguiente.MATERIAL === valorActual.MATERIAL ||
+        materialsCode[valorSiguiente.MATERIAL] === valorActual.TIPO_MATERIAL) &&
+      (valorSiguiente["Numero de semana"] === valorActual["Numero de semana"] ||
+        valorSiguiente["Numero de semana"] === valorActual.SEMANA)
+    ) {
+      massObject.CANTIDAD_MATERIAL =
+        parseFloat(valorSiguiente["Entrada diaria"]) +
+        parseFloat(
+          valorActual["Entrada diaria"] || valorActual.CANTIDAD_MATERIAL
+        );
+      data[index] = massObject;
+      data.splice(index + 1, 1);
+    } else {
+      data[index] = massObject;
+      index++;
+    }
+  }
+
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Hoja1");
+
+  return new Blob([s2ab(XLSX.write(workbook, { type: "binary" }))], {
+    type: "application/octet-stream",
+  });
+}
+
+export function downloadZipFile(data, selectedDate, materialsCode) {
   const zip = new JSZip();
   const instantTime = new Date();
   const individualReportBlob = downloadIndividualReport(data);
   const generalReportBlob = downloadGeneralReport(data);
   const matrixReport = downloadMatrixReport(data, selectedDate);
+  const massBalanceReport = downloadMassBalancReport(data, materialsCode);
 
   zip.file("reporte-Individual.xlsx", individualReportBlob);
   zip.file("reporte-General.xlsx", generalReportBlob);
   zip.file("matriz-materiales.xlsx", matrixReport);
+  zip.file("balance-masas.xlsx", massBalanceReport);
 
   zip.generateAsync({ type: "blob" }).then((blob) => {
     FileSaver.saveAs(blob, "reporte_" + instantTime.getUTCDate() + ".zip");

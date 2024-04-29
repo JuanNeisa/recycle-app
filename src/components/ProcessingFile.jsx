@@ -1,7 +1,6 @@
 //Libraries
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Papa from "papaparse";
-import * as XLSX from "xlsx";
 
 //Utils
 import { removeBlankPropertiesFromObject } from "../utils/ProcessingFile.utils";

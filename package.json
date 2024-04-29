@@ -1,7 +1,7 @@
 {
   "name": "recycle-app",
   "productName": "recycle-app",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "A small application for recycling",
   "main": ".vite/build/main.js",
   "scripts": {
