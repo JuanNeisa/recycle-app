@@ -63,7 +63,9 @@ const getWeekNumber = (fecha) => {
     if (dateObj.getDay() === 0) sundayCounter++;
     dateObj.setDate(dateObj.getDate() - 1);
   }
-  return sundayCounter;
+  
+  const firstDayOfMonth = new Date(dateObj.getFullYear(), (dateObj.getMonth() + 1), 1);
+  return firstDayOfMonth.getDay() === 0 ? sundayCounter - 1 : sundayCounter;
 };
 
 const getRandomDays = (selectedDate, materialsArray, numberOfParts) => {

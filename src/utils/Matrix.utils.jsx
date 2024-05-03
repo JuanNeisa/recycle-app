@@ -17,7 +17,7 @@ const sundaysInAMonth = (date) => {
 
 function setDefaultHeader() {
   const worksheet = XLSX.utils.aoa_to_sheet([]);
-  worksheet["!ref"] = "A1:AG25";
+  worksheet["!ref"] = "A1:AG60";
 
   worksheet["!merges"] = [
     { s: { r: 0, c: 0 }, e: { r: 0, c: 31 } },
@@ -70,7 +70,6 @@ function setDefaultHeader() {
   worksheet["A3"] = { v: "RECICLADOR", t: "s" };
   worksheet["A4"] = { v: "MACRORUTA", t: "s" };
   worksheet["A5"] = { v: "Dia", t: "s" };
-  worksheet["A24"] = { v: "RECHAZO", t: "s" };
   worksheet["Q3"] = { v: "VEHICULO", t: "s" };
   worksheet["Q4"] = { v: "MES", t: "s" };
 
