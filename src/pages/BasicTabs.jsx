@@ -8,6 +8,7 @@ import DownloadReports from "../components/DownloadReports";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
+import SplitSimulator from "../components/SplitSimulator";
 
 export default function BasicTabs({ processingData, validTabs }) {
   const [value, setValue] = useState(0);
@@ -25,11 +26,13 @@ export default function BasicTabs({ processingData, validTabs }) {
           centered
         >
           <Tab label="Informacion" />
+          <Tab label="Simulador Distribucion Material" />
           <Tab label="Descarga de reportes" disabled={!validTabs} />
         </Tabs>
       </Box>
       {value === 0 && <Info />}
-      {value === 1 && <DownloadReports data={processingData} />}
+      {value === 1 && <SplitSimulator />}
+      {value === 2 && <DownloadReports data={processingData} />}
     </Box>
   );
 }

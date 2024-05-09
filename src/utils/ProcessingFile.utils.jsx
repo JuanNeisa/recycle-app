@@ -4,38 +4,65 @@ const getPersonalData = (recycler) => {
   );
 };
 
-const generationRandomParts = (materialName, materialValue, numberOfParts) => {
+const generationRandomParts = (
+  materialName,
+  materialValue,
+  numberOfParts,
+  percentage
+) => {
   const decimalPrecision = 1;
-  const promedio = materialValue / numberOfParts;
-  const partes = [];
+  const avergeValue = materialValue / numberOfParts;
+  const randomParts = [];
+  const max = avergeValue + avergeValue * (percentage);
+  const min = avergeValue + avergeValue * ((percentage) * -1);
 
-  // Iteramos sobre el número de partes
-  for (let i = 0; i < numberOfParts - 1; i++) {
-    // Generamos un valor aleatorio dentro del rango del promedio más/menos 5%
-    let parte = promedio + Math.random() * 0.1 * promedio - 0.05 * promedio;
-    // Redondeamos la parte al número de decimales especificado
-    parte = parseFloat(parte.toFixed(decimalPrecision));
-    // Añadimos la parte al arreglo
-    partes.push({
+  for (var i = 1; i <= numberOfParts - 1; i++) {
+    const randomPart = parseFloat(
+      (Math.random() * (max - min) + min).toFixed(decimalPrecision)
+    );
+    randomParts.push({
       MATERIAL: materialName,
-      ["Entrada diaria"]: parseFloat(parte),
+      ["Entrada diaria"]: randomPart,
     });
-    // Restamos el valor de la parte al total
-    materialValue -= parte;
+    materialValue = materialValue - randomPart;
   }
-
-  // La última parte es el resto que queda
-  partes.push({
+  randomParts.push({
     MATERIAL: materialName,
     ["Entrada diaria"]: parseFloat(materialValue.toFixed(decimalPrecision)),
   });
-  return partes;
+  return randomParts;
+
+  // const decimalPrecision = 1; *
+  // const promedio = materialValue / numberOfParts; *
+  // const partes = []; *
+
+  // // Iteramos sobre el número de partes
+  // for (let i = 0; i < numberOfParts - 1; i++) {
+  //   // Generamos un valor aleatorio dentro del rango del promedio más/menos 5%
+  //   let parte = promedio + Math.random() * 0.1 * promedio - 0.05 * promedio;
+  //   // Redondeamos la parte al número de decimales especificado
+  //   parte = parseFloat(parte.toFixed(decimalPrecision));
+  //   // Añadimos la parte al arreglo
+  //   partes.push({
+  //     MATERIAL: materialName,
+  //     ["Entrada diaria"]: parseFloat(parte),
+  //   });
+  //   // Restamos el valor de la parte al total
+  //   materialValue -= parte;
+  // }
+
+  // // La última parte es el resto que queda
+  // partes.push({
+  //   MATERIAL: materialName,
+  //   ["Entrada diaria"]: parseFloat(materialValue.toFixed(decimalPrecision)),
+  // });
+  // return partes;
 };
 
-const recyclingMaterials = (materialsArray, numberOfParts) => {
+const recyclingMaterials = (materialsArray, numberOfParts, percentage) => {
   const randomParts = [];
   materialsArray.forEach(([material, value]) => {
-    randomParts.push(...generationRandomParts(material, value, numberOfParts));
+    randomParts.push(...generationRandomParts(material, value, numberOfParts, percentage));
   });
   return randomParts;
 };
@@ -63,8 +90,12 @@ const getWeekNumber = (fecha) => {
     if (dateObj.getDay() === 0) sundayCounter++;
     dateObj.setDate(dateObj.getDate() - 1);
   }
-  
-  const firstDayOfMonth = new Date(dateObj.getFullYear(), (dateObj.getMonth() + 1), 1);
+
+  const firstDayOfMonth = new Date(
+    dateObj.getFullYear(),
+    dateObj.getMonth() + 1,
+    1
+  );
   return firstDayOfMonth.getDay() === 0 ? sundayCounter - 1 : sundayCounter;
 };
 
@@ -78,7 +109,10 @@ const getRandomDays = (selectedDate, materialsArray, numberOfParts) => {
 
   materialsArray.forEach(() => {
     randomDays.push(
-      ...workingDays.sort(() => Math.random() - 0.5).slice(0, numberOfParts).sort((a, b) => a - b)
+      ...workingDays
+        .sort(() => Math.random() - 0.5)
+        .slice(0, numberOfParts)
+        .sort((a, b) => a - b)
     );
   });
 
@@ -96,7 +130,7 @@ export function removeBlankPropertiesFromObject(obj) {
 }
 
 export function generateGlobalInformation(csvData, selectedDate) {
-  const { result, numberOfParts } = csvData;
+  const { result, numberOfParts, percentage } = csvData;
 
   const globalResponse = [];
   result.forEach((recycler) => {
@@ -104,7 +138,8 @@ export function generateGlobalInformation(csvData, selectedDate) {
     // Random part assign
     const randomParts = recyclingMaterials(
       Object.entries(recycler).filter(([key]) => key !== key.toUpperCase()),
-      numberOfParts
+      numberOfParts,
+      percentage
     );
     const randomDays = getRandomDays(
       selectedDate,

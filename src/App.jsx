@@ -21,7 +21,7 @@ function App() {
           flexDirection: "column",
         }}>
         <h1 style={{ marginBottom: "0" }}>♻️ Recycle App ♻️</h1>
-        <h5 style={{ margin: "0" }}>Version 2.2.2</h5>
+        <h5 style={{ margin: "0" }}>Version 2.3.0</h5>
       </div>
       <ProcessingFile setData={setProcessingFile} />
       <BasicTabs processingData={BasicTabsState} validTabs={!!BasicTabsState}/>

@@ -40,7 +40,8 @@ const VisuallyHiddenInput = styled("input")({
 export default function ProcessingFile({ setData }) {
   const [csvFile, setCsvFile] = useState(null);
   const [statusFile, setStatusFile] = useState(status.EMPTY);
-  const [numberOfParts, setNumberOfParts] = useState("");
+  const [numberOfParts, setNumberOfParts] = useState(8);
+  const [percentage, setPercentage] = useState(0.15);
 
   const readCSVFile = (file) => {
     return new Promise((resolve, reject) => {
@@ -62,7 +63,7 @@ export default function ProcessingFile({ setData }) {
   const handleChange = (event, newValue) => {
     const file = event.target.files[0];
     setStatusFile(status.LOADING);
-    setCsvFile(file)
+    setCsvFile(file);
     if (file.type !== VALID_EXTENSION) {
       setStatusFile(status.ERROR);
       setData(null);
@@ -73,6 +74,7 @@ export default function ProcessingFile({ setData }) {
           setData({
             result,
             numberOfParts: numberOfParts === "" ? 8 : numberOfParts,
+            percentage
           });
           setStatusFile(status.SUCCESS);
         })
@@ -109,29 +111,48 @@ export default function ProcessingFile({ setData }) {
               Upload file
               <VisuallyHiddenInput type="file" />
             </Button>
-            <h4 style={{marginLeft: '6px'}}>
-              {csvFile?.name}
-            </h4>
+            <h4 style={{ marginLeft: "6px" }}>{csvFile?.name}</h4>
           </div>
           <Box sx={{ minWidth: 200 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">
-                Numero de partes
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={numberOfParts}
-                label="Numero de partes"
-                onChange={(event) => setNumberOfParts(event.target.value)}
-              >
-                <MenuItem value={4}>4</MenuItem>
-                <MenuItem value={6}>6</MenuItem>
-                <MenuItem value={8}>8</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={12}>12</MenuItem>
-              </Select>
-            </FormControl>
+            <div>
+              <FormControl fullWidth size="normal">
+                <InputLabel id="demo-simple-select-label">
+                  Numero de partes
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={numberOfParts}
+                  label="Numero de partes"
+                  onChange={(event) => setNumberOfParts(event.target.value)}
+                >
+                  <MenuItem value={4}>4</MenuItem>
+                  <MenuItem value={6}>6</MenuItem>
+                  <MenuItem value={8}>8</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={12}>12</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="demo-simple-select-label">
+                  Porcentaje
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={percentage}
+                  label="Numero de partes"
+                  onChange={(event) => setPercentage(+event.target.value)}
+                >
+                  <MenuItem value={0.1}>10%</MenuItem>
+                  <MenuItem value={0.15}>15%</MenuItem>
+                  <MenuItem value={0.2}>20%</MenuItem>
+                  <MenuItem value={0.3}>30%</MenuItem>
+                  <MenuItem value={0.4}>40%</MenuItem>
+                  <MenuItem value={0.5}>50%</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
           </Box>
         </Stack>
         <div style={{ paddingTop: "10px" }}>
