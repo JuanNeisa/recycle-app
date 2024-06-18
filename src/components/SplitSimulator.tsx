@@ -88,7 +88,7 @@ export default function SplitSimulator() {
               variant="contained"
               onClick={() => generateData(selectedValue!)}
             >
-              Contained
+              Generar
             </Button>
           </Grid>
           <Grid item xs={6} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>

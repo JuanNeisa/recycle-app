@@ -31,32 +31,6 @@ const generationRandomParts = (
     ["Entrada diaria"]: parseFloat(materialValue.toFixed(decimalPrecision)),
   });
   return randomParts;
-
-  // const decimalPrecision = 1; *
-  // const promedio = materialValue / numberOfParts; *
-  // const partes = []; *
-
-  // // Iteramos sobre el número de partes
-  // for (let i = 0; i < numberOfParts - 1; i++) {
-  //   // Generamos un valor aleatorio dentro del rango del promedio más/menos 5%
-  //   let parte = promedio + Math.random() * 0.1 * promedio - 0.05 * promedio;
-  //   // Redondeamos la parte al número de decimales especificado
-  //   parte = parseFloat(parte.toFixed(decimalPrecision));
-  //   // Añadimos la parte al arreglo
-  //   partes.push({
-  //     MATERIAL: materialName,
-  //     ["Entrada diaria"]: parseFloat(parte),
-  //   });
-  //   // Restamos el valor de la parte al total
-  //   materialValue -= parte;
-  // }
-
-  // // La última parte es el resto que queda
-  // partes.push({
-  //   MATERIAL: materialName,
-  //   ["Entrada diaria"]: parseFloat(materialValue.toFixed(decimalPrecision)),
-  // });
-  // return partes;
 };
 
 const recyclingMaterials = (materialsArray, numberOfParts, percentage) => {
