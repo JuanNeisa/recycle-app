@@ -77,6 +77,7 @@ function downloadMassBalancReport(data, materialsCode) {
         valorActual["Entrada diaria"] || valorActual.CANTIDAD_MATERIAL,
       TIPO_MATERIAL:
         materialsCode[valorActual.MATERIAL] || valorActual.TIPO_MATERIAL,
+      RECHAZO: parseFloat(valorActual.Rechazado ?? valorActual.RECHAZO),
     };
 
     if (
@@ -91,6 +92,8 @@ function downloadMassBalancReport(data, materialsCode) {
         parseFloat(
           valorActual["Entrada diaria"] || valorActual.CANTIDAD_MATERIAL
         );
+      massObject.RECHAZO = valorSiguiente.Rechazado +
+      (valorActual.Rechazado ?? valorActual.RECHAZO);
       data[index] = massObject;
       data.splice(index + 1, 1);
     } else {
@@ -115,8 +118,8 @@ export function downloadZipFile(data, selectedDate, materialsCode) {
   const matrixReport = downloadMatrixReport(data, selectedDate);
   const massBalanceReport = downloadMassBalancReport(data, materialsCode);
 
-  zip.file("reporte-Individual.xlsx", individualReportBlob);
-  zip.file("reporte-General.xlsx", generalReportBlob);
+  zip.file("reporte-individual.xlsx", individualReportBlob);
+  zip.file("reporte-general.xlsx", generalReportBlob);
   zip.file("matriz-materiales.xlsx", matrixReport);
   zip.file("balance-masas.xlsx", massBalanceReport);
 

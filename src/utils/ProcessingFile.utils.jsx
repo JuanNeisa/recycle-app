@@ -11,10 +11,10 @@ const generationRandomParts = (
   percentage
 ) => {
   const decimalPrecision = 1;
-  const avergeValue = materialValue / numberOfParts;
+  const averageValue = materialValue / numberOfParts;
   const randomParts = [];
-  const max = avergeValue + avergeValue * (percentage);
-  const min = avergeValue + avergeValue * ((percentage) * -1);
+  const max = averageValue + averageValue * percentage;
+  const min = averageValue + averageValue * (percentage * -1);
 
   for (var i = 1; i <= numberOfParts - 1; i++) {
     const randomPart = parseFloat(
@@ -30,14 +30,27 @@ const generationRandomParts = (
     MATERIAL: materialName,
     ["Entrada diaria"]: parseFloat(materialValue.toFixed(decimalPrecision)),
   });
-  return randomParts;
+  return randomParts.map((part) => {
+    const partValue = part["Entrada diaria"];
+    const rejectedValue = Math.random() * ((partValue * 0.2) - 0) + 0;
+    return {
+      ...part,
+      Rechazado:
+        Math.random() < 0.5
+          ? parseFloat(rejectedValue.toFixed(decimalPrecision))
+          : 0,
+    };
+  });
 };
 
 const recyclingMaterials = (materialsArray, numberOfParts, percentage) => {
   const randomParts = [];
   materialsArray.forEach(([material, value]) => {
-    randomParts.push(...generationRandomParts(material, value, numberOfParts, percentage));
+    randomParts.push(
+      ...generationRandomParts(material, value, numberOfParts, percentage)
+    );
   });
+
   return randomParts;
 };
 

@@ -109,29 +109,48 @@ export function setInformation(data, date) {
       t: "s",
     };
 
-    Object.entries(filterByMaterial(materialsArray, "MATERIAL")).forEach(
-      ([material, arrayPerMaterial], j) => {
-        // Set material name
-        worksheet["A" + (j + 6)] = { v: material, t: "s" };
-
-        // Set values in material row
-        arrayPerMaterial.forEach((item, i) => {
-          const cellAddress = XLSX.utils.encode_cell({
-            r: j + 5,
-            c: item.DIA,
-          });
-          worksheet[cellAddress] = { v: item["Entrada diaria"], t: "n" };
-        });
-
-        sundayArr.forEach((dayNumber, k) => {
-          const cellAddress = XLSX.utils.encode_cell({
-            r: j + 5,
-            c: dayNumber,
-          });
-          worksheet[cellAddress] = { v: "|", t: "s" };
-        });
-      }
+    const dayCounter = {};
+    const objFilterByMaterial = Object.entries(
+      filterByMaterial(materialsArray, "MATERIAL")
     );
+
+    objFilterByMaterial.forEach(([material, arrayPerMaterial], j) => {
+      // Set material name
+      worksheet["A" + (j + 6)] = { v: material, t: "s" };
+
+      // Set values in material row
+      arrayPerMaterial.forEach((item, i) => {
+        const cellAddress = XLSX.utils.encode_cell({
+          r: j + 5,
+          c: item.DIA,
+        });
+        worksheet[cellAddress] = { v: item["Entrada diaria"], t: "n" };
+
+        // Count value per day
+        if (dayCounter[item.DIA]) {
+          dayCounter[item.DIA] += item.Rechazado;
+        } else {
+          dayCounter[item.DIA] = item.Rechazado;
+        }
+      });
+
+      sundayArr.forEach((dayNumber, k) => {
+        const cellAddress = XLSX.utils.encode_cell({
+          r: j + 5,
+          c: dayNumber,
+        });
+        worksheet[cellAddress] = { v: "|", t: "s" };
+      });
+    });
+
+    worksheet["A" + (objFilterByMaterial.length + 6)] = { v: 'Rechazo', t: "s" };
+    Object.entries(dayCounter).forEach(([key, value], i) => {
+      const cellAddress = XLSX.utils.encode_cell({
+        r: objFilterByMaterial.length + 5,
+        c: parseInt(key),
+      });
+      worksheet[cellAddress] = { v: parseFloat(value.toFixed(2)), t: "n" };
+    })
 
     XLSX.utils.book_append_sheet(workbook, worksheet, CEDULA);
   });
