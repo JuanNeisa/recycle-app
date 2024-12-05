@@ -8,7 +8,7 @@ const generationRandomParts = (
   materialName,
   materialValue,
   numberOfParts,
-  percentage
+  percentage, rejected
 ) => {
   const decimalPrecision = 1;
   const averageValue = materialValue / numberOfParts;
@@ -32,7 +32,7 @@ const generationRandomParts = (
   });
   return randomParts.map((part) => {
     const partValue = part["Entrada diaria"];
-    const rejectedValue = Math.random() * ((partValue * 0.2) - 0) + 0;
+    const rejectedValue = Math.random() * ((partValue * rejected) - 0) + 0;
     return {
       ...part,
       Rechazado:
@@ -43,11 +43,11 @@ const generationRandomParts = (
   });
 };
 
-const recyclingMaterials = (materialsArray, numberOfParts, percentage) => {
+const recyclingMaterials = (materialsArray, numberOfParts, percentage, rejected) => {
   const randomParts = [];
   materialsArray.forEach(([material, value]) => {
     randomParts.push(
-      ...generationRandomParts(material, value, numberOfParts, percentage)
+      ...generationRandomParts(material, value, numberOfParts, percentage, rejected)
     );
   });
 
@@ -117,7 +117,7 @@ export function removeBlankPropertiesFromObject(obj) {
 }
 
 export function generateGlobalInformation(csvData, selectedDate) {
-  const { result, numberOfParts, percentage } = csvData;
+  const { result, numberOfParts, percentage, rejected } = csvData;
 
   const globalResponse = [];
   result.forEach((recycler) => {
@@ -126,7 +126,8 @@ export function generateGlobalInformation(csvData, selectedDate) {
     const randomParts = recyclingMaterials(
       Object.entries(recycler).filter(([key]) => key !== key.toUpperCase()),
       numberOfParts,
-      percentage
+      percentage,
+      rejected
     );
     const randomDays = getRandomDays(
       selectedDate,

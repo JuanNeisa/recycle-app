@@ -1,7 +1,7 @@
 {
   "name": "recycle-app",
   "productName": "recycle-app",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "A small application for recycling",
   "main": ".vite/build/main.js",
   "scripts": {
@@ -26,16 +26,15 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@electron-forge/plugin-vite": "^7.2.0",
     "electron": "28.2.2",
+    "eslint": "^9.13.0",
     "papaparse": "^5.4.1",
     "xlsx": "^0.18.5"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@mui/icons-material": "^5.15.15",
-    "@mui/material": "^5.15.15",
-    "@mui/x-date-pickers": "7.2.0",
-    "dayjs": "1.11.10",
+    "antd": "^5.21.6",
+    "dayjs": "^1.11.10",
     "electron-squirrel-startup": "^1.0.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
