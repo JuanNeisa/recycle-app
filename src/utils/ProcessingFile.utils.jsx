@@ -1,3 +1,5 @@
+import Papa from "papaparse";
+
 const getPersonalData = (recycler) => {
   return Object.fromEntries(
     Object.entries(recycler).filter(([key]) => key === key.toUpperCase())
@@ -8,7 +10,8 @@ const generationRandomParts = (
   materialName,
   materialValue,
   numberOfParts,
-  percentage, rejected
+  percentage,
+  rejected
 ) => {
   const decimalPrecision = 1;
   const averageValue = materialValue / numberOfParts;
@@ -32,7 +35,7 @@ const generationRandomParts = (
   });
   return randomParts.map((part) => {
     const partValue = part["Entrada diaria"];
-    const rejectedValue = Math.random() * ((partValue * rejected) - 0) + 0;
+    const rejectedValue = Math.random() * (partValue * rejected - 0) + 0;
     return {
       ...part,
       Rechazado:
@@ -43,11 +46,22 @@ const generationRandomParts = (
   });
 };
 
-const recyclingMaterials = (materialsArray, numberOfParts, percentage, rejected) => {
+const recyclingMaterials = (
+  materialsArray,
+  numberOfParts,
+  percentage,
+  rejected
+) => {
   const randomParts = [];
   materialsArray.forEach(([material, value]) => {
     randomParts.push(
-      ...generationRandomParts(material, value, numberOfParts, percentage, rejected)
+      ...generationRandomParts(
+        material,
+        value,
+        numberOfParts,
+        percentage,
+        rejected
+      )
     );
   });
 
@@ -153,4 +167,36 @@ export function generateGlobalInformation(csvData, selectedDate) {
   });
 
   return globalResponse;
+}
+
+// Improved readCSVFile function
+export async function readCSVFile(file) {
+  try {
+    return await parseCSV(file);
+  } catch (error) {
+    console.error("Error reading CSV file:", error);
+    throw error;
+  }
+}
+
+// Function to parse the CSV file
+function parseCSV(file) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(file, {
+      header: true,
+      complete: (result) => {
+        try {
+          const cleanedData = result.data
+            .filter((row) => row["RECICLADOR"]?.trim()) // Only keep rows with a non-empty "RECICLADOR"
+            .map(removeBlankPropertiesFromObject); // Clean up each object
+          resolve(cleanedData);
+        } catch (err) {
+          reject(new Error(`Error processing CSV data: ${err.message}`));
+        }
+      },
+      error: (error) => {
+        reject(new Error(`Error parsing CSV file: ${error.message}`));
+      },
+    });
+  });
 }

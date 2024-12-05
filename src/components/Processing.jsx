@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // AntDesign
 import { UploadOutlined, DiffOutlined } from "@ant-design/icons";
@@ -11,11 +11,18 @@ import {
   Descriptions,
   Typography,
   Space,
+  DatePicker,
 } from "antd";
 const { Title } = Typography;
 
+// Components
 import DropdownList from "./processing/DropdownList";
-import DateSelector from "./common/dateSelector";
+import DateSelector from "./processing/DateSelector";
+
+// Utils
+import { readCSVFile } from "../utils/ProcessingFile.utils";
+import { generateGlobalInformation } from "../utils/ProcessingFile.utils";
+import { downloadZipFile } from "../utils/downloadReport.utils";
 
 const VALID_EXTENSION = "text/csv";
 const fileStatus = {
@@ -31,7 +38,7 @@ export default function Processing() {
   } = theme.useToken();
 
   const [config, setConfig] = useState(null); // Configuracion para la generacion de archivos
-  const [codeFile, setCodeFile] = useState(null); // Configuracion para el archivo de codigos
+  const [filesObj, setFilesObj] = useState(null); // Configuracion para el archivo de codigos
   const [holidays, setHolidays] = useState(null); // Lista de dias festivos
   const [statusFile, setStatusFile] = useState(fileStatus.EMPTY); // Estado que se encuentra la carga del archivo principal
 
@@ -42,24 +49,50 @@ export default function Processing() {
   };
 
   const uploadCsvFileProps = {
-    beforeUpload: (file) => {
-      if (file && file.type.includes(VALID_EXTENSION)) {
-        setStatusFile(fileStatus.SUCCESS);
-      } else setStatusFile(fileStatus.ERROR);
-      return false;
+    beforeUpload: () => false,
+    onChange: (changeObj) => {
+      const file = changeObj.fileList.length > 0 ? changeObj.file : null;
+      if (file !== null) {
+        if (file && file.type.includes(VALID_EXTENSION)) {
+          setStatusFile(fileStatus.SUCCESS);
+          setFilesObj({ ...filesObj, csvFile: file });
+        } else setStatusFile(fileStatus.ERROR);
+      }
     },
-    onRemove: () => setStatusFile(fileStatus.ERROR),
+    onRemove: () => setStatusFile(fileStatus.EMPTY),
     ...basicUploadProps,
   };
 
   const uploadCodesFileProps = {
     beforeUpload: (file) => {
-      if (file && file.type.includes(VALID_EXTENSION)) setCodeFile(file);
+      if (file && file.type.includes(VALID_EXTENSION))
+        setFilesObj({ ...filesObj, codeFile: file });
       return false;
     },
-    onRemove: () => setCodeFile(null),
+    onRemove: () => setFilesObj({ ...filesObj, codeFile: null }),
     disabled: statusFile !== fileStatus.SUCCESS,
     ...basicUploadProps,
+  };
+
+  const generateResults = async () => {
+    try {
+      const result = await readCSVFile(filesObj.csvFile);
+      const selectedDate = new Date(config.selectedMonth.$d);
+      const procesingInfo = generateGlobalInformation(
+        {
+          result,
+          numberOfParts: config.numberOfParts,
+          percentage: config.percentage,
+          rejected: config.rejected,
+        },
+        selectedDate
+      );
+
+      //Download Reports
+      downloadZipFile(procesingInfo, selectedDate, filesObj.codeFile);
+    } catch (error) {
+      console.error("Failed to read the CSV file:", error);
+    }
   };
 
   return (
@@ -87,11 +120,19 @@ export default function Processing() {
         <Upload {...uploadCodesFileProps}>
           <Button
             icon={<DiffOutlined />}
-            disabled={statusFile !== fileStatus.SUCCESS}>
+            disabled={statusFile !== fileStatus.SUCCESS}
+          >
             Cargar codigos
           </Button>
         </Upload>
-        <DateSelector setHolidays={setHolidays} disabledFlag={statusFile !== fileStatus.SUCCESS}/>
+        <DatePicker
+          onChange={(date) => setConfig({ ...config, selectedMonth: date })}
+          picker="month"
+        />
+        <DateSelector
+          setHolidays={setHolidays}
+          disabledFlag={statusFile !== fileStatus.SUCCESS}
+        />
       </Space>
       {/* Resumen */}
       <Card size="small" style={{ margin: "20px 0 " }}>
@@ -110,14 +151,20 @@ export default function Processing() {
             {config?.rejected * 100 + "%" || 0}
           </Descriptions.Item>
           <Descriptions.Item label="Archivo de codigos">
-            {codeFile ? "✅" : "❌"}
+            {filesObj?.codeFile ? "✅" : "❌"}
           </Descriptions.Item>
           <Descriptions.Item label="Festivos">
             {holidays ? "✅" : "❌"}
           </Descriptions.Item>
         </Descriptions>
       </Card>
-      <Button type="primary">Generar resultados</Button>
+      <Button
+        type="primary"
+        disabled={statusFile !== fileStatus.SUCCESS}
+        onClick={generateResults}
+      >
+        Generar resultados
+      </Button>
     </div>
   );
 }
