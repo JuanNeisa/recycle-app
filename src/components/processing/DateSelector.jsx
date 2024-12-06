@@ -1,17 +1,20 @@
 import React from "react";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 import { DatePicker } from "antd";
 
-export default function DateSelector({ setHolidays, disabledFlag }) {
-  const dateFormat = 'YYYY-MM-DD';
+export default function DateSelector({
+  setHolidays,
+  disabledFlag,
+  selectedMonth,
+}) {
 
   return (
     <>
       <DatePicker
         multiple
-        minDate={dayjs('2024-08-01', dateFormat)}
-        maxDate={dayjs('2024-08-31', dateFormat)}
+        minDate={dayjs(selectedMonth).startOf("month")}
+        maxDate={dayjs(selectedMonth).endOf("month")}
         onChange={setHolidays}
         disabled={disabledFlag}
         maxTagCount="responsive"

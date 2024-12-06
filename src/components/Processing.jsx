@@ -136,6 +136,7 @@ export default function Processing() {
             setHolidays(holidaysArray.map((holiday) => holiday.$D))
           }
           disabledFlag={!config?.selectedMonth}
+          selectedMonth={config?.selectedMonth}
         />
       </Space>
       {/* Resumen */}
