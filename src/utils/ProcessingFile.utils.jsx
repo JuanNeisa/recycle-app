@@ -100,8 +100,9 @@ const getWeekNumber = (fecha) => {
   return firstDayOfMonth.getDay() === 0 ? sundayCounter - 1 : sundayCounter;
 };
 
-const getRandomDays = (selectedDate, materialsArray, numberOfParts) => {
+const getRandomDays = (selectedDate, holidays, materialsArray, numberOfParts) => {
   const { sundayArr, daysCounter } = sundaysInAMonth(selectedDate);
+  sundayArr.push(...holidays)
   const workingDays = Array.from(
     { length: daysCounter },
     (_, index) => index + 1
@@ -131,7 +132,7 @@ export function removeBlankPropertiesFromObject(obj) {
 }
 
 export function generateGlobalInformation(csvData, selectedDate) {
-  const { result, numberOfParts, percentage, rejected } = csvData;
+  const { result, numberOfParts, percentage, rejected, holidays } = csvData;
 
   const globalResponse = [];
   result.forEach((recycler) => {
@@ -145,6 +146,7 @@ export function generateGlobalInformation(csvData, selectedDate) {
     );
     const randomDays = getRandomDays(
       selectedDate,
+      holidays,
       Object.entries(recycler).filter(([key]) => key !== key.toUpperCase()),
       numberOfParts
     );

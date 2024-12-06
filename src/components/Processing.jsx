@@ -84,12 +84,13 @@ export default function Processing() {
           numberOfParts: config.numberOfParts,
           percentage: config.percentage,
           rejected: config.rejected,
+          holidays
         },
         selectedDate
       );
 
       //Download Reports
-      downloadZipFile(procesingInfo, selectedDate, filesObj.codeFile);
+      downloadZipFile(procesingInfo, selectedDate, holidays, filesObj.codeFile);
     } catch (error) {
       console.error("Failed to read the CSV file:", error);
     }
@@ -127,11 +128,14 @@ export default function Processing() {
         </Upload>
         <DatePicker
           onChange={(date) => setConfig({ ...config, selectedMonth: date })}
+          disabled={statusFile !== fileStatus.SUCCESS}
           picker="month"
         />
         <DateSelector
-          setHolidays={setHolidays}
-          disabledFlag={statusFile !== fileStatus.SUCCESS}
+          setHolidays={(holidaysArray) =>
+            setHolidays(holidaysArray.map((holiday) => holiday.$D))
+          }
+          disabledFlag={!config?.selectedMonth}
         />
       </Space>
       {/* Resumen */}
@@ -152,6 +156,9 @@ export default function Processing() {
           </Descriptions.Item>
           <Descriptions.Item label="Archivo de codigos">
             {filesObj?.codeFile ? "✅" : "❌"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Seleccion de mes">
+            {config?.selectedMonth ? "✅" : "❌"}
           </Descriptions.Item>
           <Descriptions.Item label="Festivos">
             {holidays ? "✅" : "❌"}

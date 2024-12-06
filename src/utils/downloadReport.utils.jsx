@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 import JSZip from "jszip";
 import FileSaver from "file-saver";
+import dayjs from 'dayjs';
 
 // Utils
 import { setInformation } from "./Matrix.utils";
@@ -52,9 +53,9 @@ function downloadIndividualReport(data) {
   });
 }
 
-function downloadMatrixReport(data, selectedDate) {
+function downloadMatrixReport(data, selectedDate, holidays) {
   const filter = filterByProperty(data, "CEDULA");
-  const workbook = setInformation(Object.entries(filter), selectedDate);
+  const workbook = setInformation(Object.entries(filter), selectedDate, holidays);
 
   return new Blob([s2ab(XLSX.write(workbook, { type: "binary" }))], {
     type: "application/octet-stream",
@@ -110,12 +111,12 @@ function downloadMassBalancReport(data, materialsCode) {
   });
 }
 
-export function downloadZipFile(data, selectedDate, materialsCode) {
+export function downloadZipFile(data, selectedDate, holidays, materialsCode) {
   const zip = new JSZip();
   const instantTime = new Date();
   const individualReportBlob = downloadIndividualReport(data);
   const generalReportBlob = downloadGeneralReport(data);
-  const matrixReport = downloadMatrixReport(data, selectedDate);
+  const matrixReport = downloadMatrixReport(data, selectedDate, holidays);
   const massBalanceReport = downloadMassBalancReport(data, materialsCode);
 
   zip.file("reporte-individual.xlsx", individualReportBlob);
@@ -124,6 +125,6 @@ export function downloadZipFile(data, selectedDate, materialsCode) {
   zip.file("balance-masas.xlsx", massBalanceReport);
 
   zip.generateAsync({ type: "blob" }).then((blob) => {
-    FileSaver.saveAs(blob, "reporte_" + instantTime.getUTCDate() + ".zip");
+    FileSaver.saveAs(blob, "reporte_" + dayjs().format('YYYYMMDD_HHmmss') + ".zip");
   });
 }

@@ -92,9 +92,10 @@ const filterByMaterial = (array, propiedad) => {
   }, {});
 };
 
-export function setInformation(data, date) {
+export function setInformation(data, date, holidays) {
   const workbook = XLSX.utils.book_new();
   const { sundayArr, daysCounter } = sundaysInAMonth(date);
+  sundayArr.push(...holidays)
   // set Random matrix
   data.forEach(([CEDULA, materialsArray], i) => {
     const worksheet = setDefaultHeader();

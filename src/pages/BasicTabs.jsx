@@ -1,8 +1,5 @@
 import React, { useState } from "react";
 
-// Utils
-import DownloadReports from "../components/DownloadReports";
-
 // Components
 import Processing from "../components/Processing";
 
