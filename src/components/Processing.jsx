@@ -39,7 +39,7 @@ export default function Processing() {
 
   const [config, setConfig] = useState(null); // Configuracion para la generacion de archivos
   const [filesObj, setFilesObj] = useState(null); // Configuracion para el archivo de codigos
-  const [holidays, setHolidays] = useState(null); // Lista de dias festivos
+  const [holidays, setHolidays] = useState([]); // Lista de dias festivos
   const [statusFile, setStatusFile] = useState(fileStatus.EMPTY); // Estado que se encuentra la carga del archivo principal
 
   const basicUploadProps = {
@@ -76,11 +76,12 @@ export default function Processing() {
 
   const generateResults = async () => {
     try {
-      const result = await readCSVFile(filesObj.csvFile);
+      const resultRecycler = await readCSVFile(filesObj.csvFile, 'RECICLADOR');
+      const resultMaterialCode = await readCSVFile(filesObj.codeFile, 'MATERIAL')
       const selectedDate = new Date(config.selectedMonth.$d);
       const procesingInfo = generateGlobalInformation(
         {
-          result,
+          result: resultRecycler,
           numberOfParts: config.numberOfParts,
           percentage: config.percentage,
           rejected: config.rejected,
@@ -90,8 +91,11 @@ export default function Processing() {
       );
 
       //Download Reports
-      downloadZipFile(procesingInfo, selectedDate, holidays, filesObj.codeFile);
-    } catch (error) {
+      downloadZipFile(procesingInfo, selectedDate, holidays, resultMaterialCode.reduce((acc, item) => {
+        acc[item.MATERIAL] = item.Codigo;
+        return acc;
+      }, {}));
+    } catch (error) { 
       console.error("Failed to read the CSV file:", error);
     }
   };

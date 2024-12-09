@@ -172,9 +172,9 @@ export function generateGlobalInformation(csvData, selectedDate) {
 }
 
 // Improved readCSVFile function
-export async function readCSVFile(file) {
+export async function readCSVFile(file, key) {
   try {
-    return await parseCSV(file);
+    return await parseCSV(file, key);
   } catch (error) {
     console.error("Error reading CSV file:", error);
     throw error;
@@ -182,15 +182,15 @@ export async function readCSVFile(file) {
 }
 
 // Function to parse the CSV file
-function parseCSV(file) {
+function parseCSV(file, key) {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
       header: true,
       complete: (result) => {
         try {
           const cleanedData = result.data
-            .filter((row) => row["RECICLADOR"]?.trim()) // Only keep rows with a non-empty "RECICLADOR"
-            .map(removeBlankPropertiesFromObject); // Clean up each object
+            .filter((row) => row[key]?.trim()) 
+            .map(removeBlankPropertiesFromObject); 
           resolve(cleanedData);
         } catch (err) {
           reject(new Error(`Error processing CSV data: ${err.message}`));
