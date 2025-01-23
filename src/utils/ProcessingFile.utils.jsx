@@ -14,28 +14,64 @@ const generationRandomParts = (
   rejected
 ) => {
   const decimalPrecision = 1;
-  const averageValue = materialValue / numberOfParts;
-  const randomParts = [];
-  const max = averageValue + averageValue * percentage;
-  const min = averageValue + averageValue * (percentage * -1);
 
-  for (var i = 1; i <= numberOfParts - 1; i++) {
-    const randomPart = parseFloat(
-      (Math.random() * (max - min) + min).toFixed(decimalPrecision)
-    );
-    randomParts.push({
-      MATERIAL: materialName,
-      ["Entrada diaria"]: randomPart,
-    });
-    materialValue = materialValue - randomPart;
+  let isValid = false;
+  let randomParts = [];
+
+  while (!isValid) {
+    // Inicializamos de nuevo los valores
+    let remainingMaterialValue = materialValue;
+    randomParts = [];
+    isValid = true; // Suponemos que será válido al inicio
+
+    const averageValue = materialValue / numberOfParts;
+    const max = averageValue + averageValue * percentage;
+    const min = averageValue + averageValue * (percentage * -1);
+
+    for (let i = 1; i <= numberOfParts - 1; i++) {
+      const randomPart = parseFloat(
+        (Math.random() * (max - min) + min).toFixed(decimalPrecision)
+      );
+
+      // Verificar si el valor generado excede lo disponible
+      if (randomPart > remainingMaterialValue) {
+        isValid = false; // Indicamos que no es válido
+        break; // Salimos del ciclo y reiniciamos el proceso
+      }
+
+      randomParts.push({
+        MATERIAL: materialName,
+        ["Entrada diaria"]: randomPart,
+      });
+
+      remainingMaterialValue -= randomPart;
+
+      // Verificar si remainingMaterialValue es negativo
+      if (remainingMaterialValue < 0) {
+        isValid = false; // Indicamos que no es válido
+        break; // Salimos del ciclo y reiniciamos el proceso
+      }
+    }
+
+    // Agregar el valor restante al final
+    if (isValid) {
+      randomParts.push({
+        MATERIAL: materialName,
+        ["Entrada diaria"]: parseFloat(
+          remainingMaterialValue.toFixed(decimalPrecision)
+        ),
+      });
+    }
   }
-  randomParts.push({
-    MATERIAL: materialName,
-    ["Entrada diaria"]: parseFloat(materialValue.toFixed(decimalPrecision)),
-  });
+
+  // Agregar valores de rechazo
   return randomParts.map((part) => {
     const partValue = part["Entrada diaria"];
-    const rejectedValue = Math.random() * (partValue * rejected - 0) + 0;
+    const randomRejected =
+      Math.random() * (rejected + 0.05 - rejected) + rejected;
+    const rejectedPart = partValue * randomRejected;
+    const rejectedValue = rejectedPart >= 1 ? rejectedPart : 0;
+
     return {
       ...part,
       Rechazado:
@@ -100,9 +136,14 @@ const getWeekNumber = (fecha) => {
   return firstDayOfMonth.getDay() === 0 ? sundayCounter - 1 : sundayCounter;
 };
 
-const getRandomDays = (selectedDate, holidays, materialsArray, numberOfParts) => {
+const getRandomDays = (
+  selectedDate,
+  holidays,
+  materialsArray,
+  numberOfParts
+) => {
   const { sundayArr, daysCounter } = sundaysInAMonth(selectedDate);
-  sundayArr.push(...holidays)
+  sundayArr.push(...holidays);
   const workingDays = Array.from(
     { length: daysCounter },
     (_, index) => index + 1
@@ -189,8 +230,8 @@ function parseCSV(file, key) {
       complete: (result) => {
         try {
           const cleanedData = result.data
-            .filter((row) => row[key]?.trim()) 
-            .map(removeBlankPropertiesFromObject); 
+            .filter((row) => row[key]?.trim())
+            .map(removeBlankPropertiesFromObject);
           resolve(cleanedData);
         } catch (err) {
           reject(new Error(`Error processing CSV data: ${err.message}`));

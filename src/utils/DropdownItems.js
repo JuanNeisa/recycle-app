@@ -16,8 +16,7 @@ export const percentageDifference = [
 ];
 
 export const percentageRejected = [
-  { key: "0", label: "4" },
-  { key: "1", label: "3" },
-  { key: "2", label: "2" },
-  { key: "3", label: "1" },
+  { key: "0", label: "5" },
+  { key: "1", label: "10" },
+  { key: "2", label: "15" }
 ];

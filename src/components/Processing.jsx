@@ -166,7 +166,7 @@ export default function Processing() {
             {config?.selectedMonth ? "✅" : "❌"}
           </Descriptions.Item>
           <Descriptions.Item label="Festivos">
-            {holidays ? "✅" : "❌"}
+            {holidays.length !== 0 ? "✅" : "❌"}
           </Descriptions.Item>
         </Descriptions>
       </Card>

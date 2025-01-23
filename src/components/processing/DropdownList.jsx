@@ -13,7 +13,7 @@ import { Button, Dropdown, Space, Badge } from "antd";
 export default function DropdownList({ setConfig, disabledFlag }) {
   const [numberOfParts, setNumberOfParts] = useState(3); // Numero de partes a dividir el material
   const [percentage, setPercentage] = useState(3); // Porcentaje de variacion en la division de unidades
-  const [rejected, setRejected] = useState(3); // Porcentaje de material rechazado
+  const [rejected, setRejected] = useState(1); // Porcentaje de material rechazado
 
   useEffect(() => {
     setConfig({
